@@ -49,7 +49,7 @@ export default function Login() {
         footer={
             <>
             Don't have an account?{" "}
-            <Link to="/register" className="text-blue-600">
+            <Link to="/Register" className="text-blue-600">
                 Sign up
             </Link>
             </>

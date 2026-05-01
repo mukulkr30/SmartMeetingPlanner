@@ -40,7 +40,7 @@ function Header({ token, setToken }) {
           </div>
         ) : (
           <Link
-            to="/login"
+            to="/Login"
             className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600"
           >
             Login
