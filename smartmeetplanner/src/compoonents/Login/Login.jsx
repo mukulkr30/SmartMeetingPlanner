@@ -13,41 +13,11 @@ export default function Login() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    // const handleLogin = async () => {
-    //     try{
-    //         // Call your backend here
-    //         const res = await fetch("https://motivator-antelope-cucumber.ngrok-free.dev/loginUser",{
-    //             method:"POST",
-    //             headers:{
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify(form), // { email, password }
-    //         })
-    //         const data = await res.text();
-    //         console.log(data)
-    //         if (res.status === 201) {
-    //             // ✅ Store tokens
-    //             localStorage.setItem("refreshToken", data.refreshToken);
-
-    //             // ✅ Store user
-    //             localStorage.setItem("user", JSON.stringify(data.user));
-
-    //             // ✅ Redirect to home
-    //             navigate("/");
-    //         }
-    //         else {
-    //             alert(data.message || "Invalid credentials");
-    //         }
-    //     }
-    //     catch (err) {
-    //         console.error(err);
-    //         alert("Server error");
-    //     }
-    // };
+    
 
     const handleLogin = async () => {
     try {
-        const res = await fetch("https://motivator-antelope-cucumber.ngrok-free.dev/loginUser", {
+        const res = await fetch(`${import.meta.env.VITE_LOGIN_URI}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -60,10 +30,7 @@ export default function Login() {
         console.log(token);
 
         if (res.ok) {
-            // ✅ Store token
             localStorage.setItem("token", token);
-
-            // ✅ Redirect
             navigate("/");
         } else {
             alert("Invalid credentials");
@@ -106,12 +73,12 @@ export default function Login() {
         />
 
         <PrimaryButton text="Sign In" onClick={handleLogin} />
-
-        <div className="text-center mt-3">
+        {/* for future version upgrade */}
+        {/* <div className="text-center mt-3">
             <Link to="/forgot" className="text-blue-600 text-sm">
             Forgot password?
             </Link>
-        </div>
+        </div> */}
         </AuthCard>
     );
 }

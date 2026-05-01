@@ -16,8 +16,7 @@ export function MeetingTranscript({ onResult }) {
     setError("");
 
     try {
-      const res = await fetch(
-        "https://motivator-antelope-cucumber.ngrok-free.dev/process",
+      const res = await fetch(`${import.meta.env.VITE_AGENT_PROCESS_URI}`,
         {
           method: "POST",
           headers: {
@@ -37,7 +36,7 @@ export function MeetingTranscript({ onResult }) {
         throw new Error(`Server Error: ${res.status}`);
       }
 
-      // 🔥 Safe parsing (fixes your error)
+      
       const textData = await res.text();
       const data = textData ? JSON.parse(textData) : {};
 
@@ -59,14 +58,11 @@ export function MeetingTranscript({ onResult }) {
     <div className="bg-white p-6 rounded-2xl shadow border space-y-4">
       <h2 className="text-lg font-semibold">Meeting Transcript</h2>
 
-      {/* Error */}
       {error && (
         <div className="text-red-500 text-sm bg-red-50 p-2 rounded">
           {error}
         </div>
       )}
-
-      {/* Transcript */}
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -74,7 +70,7 @@ export function MeetingTranscript({ onResult }) {
         className="w-full h-40 border rounded-xl p-3 focus:ring-2 focus:ring-blue-400 outline-none"
       />
 
-      {/* Team Members */}
+    
       <input
         type="text"
         value={members}
@@ -83,7 +79,6 @@ export function MeetingTranscript({ onResult }) {
         className="w-full px-3 py-2 border rounded-xl focus:ring-2 focus:ring-purple-400 outline-none"
       />
 
-      {/* Button */}
       <button
         onClick={handleAnalyze}
         disabled={loading}

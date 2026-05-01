@@ -15,14 +15,11 @@ export default function Register() {
 
   const [loading, setLoading] = useState(false);
 
-  // Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ FIXED: Direct async function
   const handleRegister = async () => {
-    // Basic validation
     if (!form.email || !form.password || !form.username) {
       alert("Please fill required fields");
       return;
@@ -32,7 +29,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://motivator-antelope-cucumber.ngrok-free.dev/addUser", {
+      const res = await fetch(`${import.meta.env.VITE_REGISTER_URI}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,10 +40,8 @@ export default function Register() {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Success
         alert("Registration successful!");
         console.log("registered: ", data);
-        // ✅ Redirect
         navigate("/login", { replace: true });
       } else {
         alert(data.message || "Registration failed");
