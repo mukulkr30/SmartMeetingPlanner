@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
-# -------- CORS CONFIG --------
+#              CORS CONFIG              
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# -------- INPUT FORMAT --------
+#              INPUT FORMAT 
 class RequestData(BaseModel):
     transcript: str
     team_members: Optional[List[str]] = []
@@ -40,10 +40,8 @@ def get_deadline(text):
 
     if "tomorrow" in text:
         days_to_add = 1
-
     elif "next week" in text:
         days_to_add = 7
-
     else:
         for day in days_map:
             if day in text:
@@ -55,7 +53,7 @@ def get_deadline(text):
 
     future = today + timedelta(days=days_to_add)
 
-    # -------- FORMAT OUTPUT --------
+    #  FORMAT OUTPUT 
     if days_to_add == 0:
         return future.strftime("%d-%m-%Y") + " (Today)"
     elif days_to_add == 1:
@@ -63,7 +61,7 @@ def get_deadline(text):
     else:
         return future.strftime("%d-%m-%Y") + f" ({days_to_add} days)"
 
-# -------- TASK CLEANING --------
+             # TASK CLEANING
 def clean_task(sentence):
     words = sentence.lower().split()
 
@@ -94,6 +92,11 @@ def clean_task(sentence):
 
     return " ".join(result).capitalize()
 
+           #SPLIT MULTIPLE TASKS 
+def split_tasks(sentence):
+    parts = sentence.replace(",", " and ").split(" and ")
+    return [p.strip() for p in parts if p.strip()]
+
 # -------- MAIN API --------
 @app.post("/process")
 def process(data: RequestData):
@@ -101,38 +104,41 @@ def process(data: RequestData):
     text = data.transcript
     members = data.team_members
 
-    # split transcript into sentences
+    #split transcript into sentences
     sentences = [s.strip() for s in text.split('.') if s.strip()]
 
-    # summary (first 2 sentences)
+    # summary
     summary = ". ".join(sentences[:2])
 
     tasks = []
 
     for s in sentences:
-        if "will" in s.lower() or "should" in s.lower() or "need to" in s.lower():
+        sub_tasks = split_tasks(s)
 
-            assigned_to = None
+        for part in sub_tasks:
+            if "will" in part.lower() or "should" in part.lower() or "need to" in part.lower():
 
-            # assign based on name
-            for m in members:
-                if m.lower() in s.lower():
-                    assigned_to = m
-                    break
+                assigned_to = None
 
-            # fallback assignment
-            if not assigned_to:
-                assigned_to = random.choice(members) if members else "Team"
+                # assign based on name
+                for m in members:
+                    if m.lower() in part.lower():
+                        assigned_to = m
+                        break
 
-            tasks.append({
-                "task": clean_task(s),
-                "assigned_to": assigned_to,
-                "deadline": get_deadline(s),
-                "priority": "High" if "urgent" in s.lower() else "Medium",
-                "status": "Pending"
-            })
+                # fallback assignment
+                if not assigned_to:
+                    assigned_to = random.choice(members) if members else "Team"
 
-    # fallback if no tasks found
+                tasks.append({
+                    "task": clean_task(part),
+                    "assigned_to": assigned_to,
+                    "deadline": get_deadline(part),
+                    "priority": "High" if "urgent" in part.lower() else "Medium",
+                    "status": "Pending"
+                })
+
+    #fallback if no tasks found
     if not tasks:
         tasks.append({
             "task": "Prepare report",
