@@ -14,11 +14,11 @@ function Header({ token, setToken }) {
     <div className="flex justify-between items-center px-6 py-4 bg-white shadow h-[10%] min-h-[60px]">
 
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-          M
+        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-white font-bold">
+          <img className="w-10 h-10" src="/l2.png" alt="" />
         </div>
         <div>
-          <h1 className="text-lg font-bold">MeetingAI</h1>
+          <h1 className="text-lg font-bold">SmartMeetPlanner</h1>
           <p className="text-xs text-gray-500">
             AI-Powered Meeting Analysis
           </p>

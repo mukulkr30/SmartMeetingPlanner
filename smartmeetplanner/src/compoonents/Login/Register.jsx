@@ -57,7 +57,7 @@ export default function Register() {
   return (
     <AuthCard
       title="Create Account"
-      subtitle="Join MeetingAI today"
+      subtitle="Join SmartMeetPlanner today"
       footer={
         <>
           Already have an account?{" "}

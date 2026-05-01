@@ -44,8 +44,8 @@ export default function Login() {
 
     return (
         <AuthCard
-        title="MeetingAI"
-        subtitle="Transform meetings into actionable tasks"
+        title="Login"
+        subtitle=""
         footer={
             <>
             Don't have an account?{" "}
