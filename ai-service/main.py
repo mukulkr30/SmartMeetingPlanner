@@ -15,12 +15,12 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# -------- INPUT FORMAT --------
+# INPUT FORMAT 
 class RequestData(BaseModel):
     transcript: str
     team_members: Optional[List[str]] = []
 
-# -------- HELPER FUNCTION FOR DEADLINE --------
+#HELPER FUNCTION FOR DEADLINE EXTRACTION
 def get_deadline(text):
     today = datetime.now()
     text = text.lower()
@@ -56,7 +56,7 @@ def get_deadline(text):
 
     future = today + timedelta(days=days_to_add)
 
-    # -------- FORMAT OUTPUT --------
+    # FORMAT OUTPUT
     if days_to_add == 0:
         return future.strftime("%d-%m-%Y") + " (Today)"
     elif days_to_add == 1:
@@ -64,7 +64,7 @@ def get_deadline(text):
     else:
         return future.strftime("%d-%m-%Y") + f" ({days_to_add} days)"
 
-# -------- MAIN API --------
+   # MAIN API ENDPOINT
 @app.post("/process")
 def process(data: RequestData):
 
@@ -81,13 +81,13 @@ def process(data: RequestData):
 
             assigned_to = None
 
-            # assign based on name
+            # assign task based on name
             for m in members:
                 if m.lower() in s.lower():
                     assigned_to = m
                     break
 
-            # fallback assignment
+            #fallback assignment
             if not assigned_to:
                 assigned_to = random.choice(members) if members else "Team"
 
@@ -99,7 +99,7 @@ def process(data: RequestData):
                 "status": "Pending"
             })
 
-    # fallback if no tasks
+    #fallback if no tasks
     if not tasks:
         tasks.append({
             "task": "Prepare report",
