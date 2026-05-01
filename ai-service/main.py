@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
+# -------- CORS CONFIG --------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,12 +16,12 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# INPUT FORMAT 
+# -------- INPUT FORMAT --------
 class RequestData(BaseModel):
     transcript: str
     team_members: Optional[List[str]] = []
 
-#HELPER FUNCTION FOR DEADLINE EXTRACTION
+# -------- DEADLINE EXTRACTION --------
 def get_deadline(text):
     today = datetime.now()
     text = text.lower()
@@ -48,15 +49,13 @@ def get_deadline(text):
             if day in text:
                 target = days_map[day]
                 current = today.weekday()
-
-                # ✅ FIXED: same day = 0 (Today)
                 diff = (target - current + 7) % 7
                 days_to_add = diff
                 break
 
     future = today + timedelta(days=days_to_add)
 
-    # FORMAT OUTPUT
+    # -------- FORMAT OUTPUT --------
     if days_to_add == 0:
         return future.strftime("%d-%m-%Y") + " (Today)"
     elif days_to_add == 1:
@@ -64,14 +63,48 @@ def get_deadline(text):
     else:
         return future.strftime("%d-%m-%Y") + f" ({days_to_add} days)"
 
-   # MAIN API ENDPOINT
+# -------- TASK CLEANING --------
+def clean_task(sentence):
+    words = sentence.lower().split()
+
+    remove_words = ["will", "should", "need", "to", "needs", "have", "has", "by"]
+
+    result = []
+
+    for i in range(len(words)):
+        # skip first word (name)
+        if i == 0:
+            continue
+
+        word = words[i]
+
+        # remove time words
+        if word in ["tomorrow", "today", "next", "week"]:
+            continue
+
+        # remove helper words
+        if word in remove_words:
+            continue
+
+        # remove adverbs like "urgently", "quickly"
+        if word.endswith("ly"):
+            continue
+
+        result.append(word)
+
+    return " ".join(result).capitalize()
+
+# -------- MAIN API --------
 @app.post("/process")
 def process(data: RequestData):
 
     text = data.transcript
     members = data.team_members
 
+    # split transcript into sentences
     sentences = [s.strip() for s in text.split('.') if s.strip()]
+
+    # summary (first 2 sentences)
     summary = ". ".join(sentences[:2])
 
     tasks = []
@@ -81,25 +114,25 @@ def process(data: RequestData):
 
             assigned_to = None
 
-            # assign task based on name
+            # assign based on name
             for m in members:
                 if m.lower() in s.lower():
                     assigned_to = m
                     break
 
-            #fallback assignment
+            # fallback assignment
             if not assigned_to:
                 assigned_to = random.choice(members) if members else "Team"
 
             tasks.append({
-                "task": s,
+                "task": clean_task(s),
                 "assigned_to": assigned_to,
                 "deadline": get_deadline(s),
                 "priority": "High" if "urgent" in s.lower() else "Medium",
                 "status": "Pending"
             })
 
-    #fallback if no tasks
+    # fallback if no tasks found
     if not tasks:
         tasks.append({
             "task": "Prepare report",
