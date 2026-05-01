@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import random
@@ -6,10 +7,62 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
 # -------- INPUT FORMAT --------
 class RequestData(BaseModel):
     transcript: str
     team_members: Optional[List[str]] = []
+
+# -------- HELPER FUNCTION FOR DEADLINE --------
+def get_deadline(text):
+    today = datetime.now()
+    text = text.lower()
+
+    days_map = {
+        "monday": 0,
+        "tuesday": 1,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 5,
+        "sunday": 6
+    }
+
+    days_to_add = 0
+
+    if "tomorrow" in text:
+        days_to_add = 1
+
+    elif "next week" in text:
+        days_to_add = 7
+
+    else:
+        for day in days_map:
+            if day in text:
+                target = days_map[day]
+                current = today.weekday()
+
+                # ✅ FIXED: same day = 0 (Today)
+                diff = (target - current + 7) % 7
+                days_to_add = diff
+                break
+
+    future = today + timedelta(days=days_to_add)
+
+    # -------- FORMAT OUTPUT --------
+    if days_to_add == 0:
+        return future.strftime("%d-%m-%Y") + " (Today)"
+    elif days_to_add == 1:
+        return future.strftime("%d-%m-%Y") + " (1 day)"
+    else:
+        return future.strftime("%d-%m-%Y") + f" ({days_to_add} days)"
 
 # -------- MAIN API --------
 @app.post("/process")
@@ -18,10 +71,7 @@ def process(data: RequestData):
     text = data.transcript
     members = data.team_members
 
-    # split into sentences
     sentences = [s.strip() for s in text.split('.') if s.strip()]
-
-    # summary (first 2 lines)
     summary = ". ".join(sentences[:2])
 
     tasks = []
@@ -31,38 +81,30 @@ def process(data: RequestData):
 
             assigned_to = None
 
-            # check if any team member name is present
+            # assign based on name
             for m in members:
                 if m.lower() in s.lower():
                     assigned_to = m
                     break
 
-            # if not found → assign randomly or "Team"
+            # fallback assignment
             if not assigned_to:
-                if members:
-                    assigned_to = random.choice(members)
-                else:
-                    assigned_to = "Team"
-
-                    
-            days_to_add = 2
-            future = datetime.now() + timedelta(days=days_to_add)
-            future_date = future.strftime("%d-%m-%Y") + f" ({days_to_add} days)"
+                assigned_to = random.choice(members) if members else "Team"
 
             tasks.append({
                 "task": s,
                 "assigned_to": assigned_to,
-                "deadline": future_date,
+                "deadline": get_deadline(s),
                 "priority": "High" if "urgent" in s.lower() else "Medium",
                 "status": "Pending"
             })
 
-    # if no tasks found
+    # fallback if no tasks
     if not tasks:
         tasks.append({
             "task": "Prepare report",
             "assigned_to": "Team",
-            "deadline": "Tomorrow",
+            "deadline": get_deadline("tomorrow"),
             "priority": "Medium",
             "status": "Pending"
         })
