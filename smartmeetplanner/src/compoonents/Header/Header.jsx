@@ -1,19 +1,18 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-function Header({ user, setUser }) {
+function Header({ token, setToken }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();   // remove tokens + user
-    setUser(null);          // update parent state
-    navigate("/login", { replace: true }); // redirect without reload
+    localStorage.clear();   
+    setToken(null);          
+    // navigate("/login", { replace: true }); 
   };
 
   return (
     <div className="flex justify-between items-center px-6 py-4 bg-white shadow h-[10%] min-h-[60px]">
 
-      {/* Left: Logo + Project Name */}
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
           M
@@ -26,19 +25,15 @@ function Header({ user, setUser }) {
         </div>
       </div>
 
-      {/* Right: Login / User */}
       <div>
-        {user ? (
+        {token ? (
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium">{user.name}</span>
-
             <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center">
-              {user.name?.[0]?.toUpperCase()}
             </div>
 
             <button
               onClick={handleLogout}
-              className="text-sm text-red-500 hover:underline"
+              className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600"
             >
               Logout
             </button>

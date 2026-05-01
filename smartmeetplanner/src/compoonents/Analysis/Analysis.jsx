@@ -28,7 +28,6 @@ export function Analysis({ data }) {
     <div className="bg-white p-6 rounded-2xl shadow border space-y-6">
       <h2 className="text-lg font-semibold">Analysis</h2>
 
-      {/* Summary */}
       <div>
         <h3 className="font-medium text-blue-600 mb-1">Summary</h3>
         <p className="text-sm text-gray-700 leading-relaxed">
@@ -36,7 +35,6 @@ export function Analysis({ data }) {
         </p>
       </div>
 
-      {/* Tasks Table */}
       <div>
         <h3 className="font-medium text-purple-600 mb-3">Tasks</h3>
 
