@@ -4,8 +4,8 @@ export function AuthCard({ title, subtitle, children, footer }) {
       <div className="w-full max-w-md bg-white rounded-2xl shadow p-8">
 
         <div className="flex flex-col items-center mb-6">
-          <div className="w-16 h-16 rounded-2xl bg-linear-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl mb-3">
-            📄
+          <div className="w-16 h-16 rounded-2xl bg-linear-to-r bg-white flex items-center justify-center text-white text-2xl mb-3">
+            <img className="w-16 h-16" src="/l2.png" alt="" />
           </div>
           <h2 className="text-2xl font-bold">{title}</h2>
           <p className="text-sm text-gray-500">{subtitle}</p>
