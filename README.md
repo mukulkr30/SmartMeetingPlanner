@@ -82,7 +82,7 @@ Runs on: http://localhost:8000
 cd backend
 mvn spring-boot:run
 
-Runs on: https://springbootbackend-o3dd.onrender.com
+Runs on: http://localhost:8080
 
 4️⃣ Start React Frontend
 cd frontend
