@@ -90,4 +90,5 @@ npm install
 npm start
 
 Runs on: https://smartmeetingplanner.vercel.app/
+
 <img src="./smartmeetplanner/public/meetingtranscript.png" alt="image" width="600"/>
