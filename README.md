@@ -91,4 +91,8 @@ npm start
 
 Runs on: https://smartmeetingplanner.vercel.app/
 
-<img src="./smartmeetplanner/public/img4.png" alt="image" width="600"/>
+
+
+
+image 
+<img src="./smartmeetplanner/public/img4.jpeg" alt="image" width="600"/>
